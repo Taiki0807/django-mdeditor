@@ -10,6 +10,27 @@
  */
 
 (function() {
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      var cookies = document.cookie.split(";");
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = jQuery.trim(cookies[i]);
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+  function manipulateDialogContent(content) {
+    const csrfToken = getCookie("csrftoken");
+    const csrfInput = "<input type='hidden' name='csrfmiddlewaretoken' value='" + csrfToken + "'>";
+    content = content.replace("</form>", csrfInput + "</form>");
+    return content;
+  }
 
     var factory = function (exports) {
 
@@ -63,7 +84,7 @@
                                         "<input type=\"text\" value=\"http://\" data-link />" +
                                         "<br/>" +
                                     ( (settings.imageUpload) ? "</form>" : "</div>");
-
+                dialogContent = manipulateDialogContent(dialogContent);
                 //var imageFooterHTML = "<button class=\"" + classPrefix + "btn " + classPrefix + "image-manager-btn\" style=\"float:left;\">" + imageLang.managerButton + "</button>";
 
                 dialog = this.createDialog({
